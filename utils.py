@@ -136,3 +136,114 @@ def attacker_pieces(board: Board, color: Color, square: Square) -> List[Piece]:
 #         if attack.to_square == square:
 #             t.append((board.piece_at(attack.from_square), attack.from_square))
 #     return t
+
+
+###############################################################################
+
+# ---- Additional tactics detection functions ---------------------------------
+
+
+def trapped_piece(node: ChildNode) -> bool:
+    """Check if a captured piece was previously trapped."""
+    square = node.move.to_square
+    captured = node.parent.board().piece_at(square)
+    if captured and captured.piece_type != PAWN:
+        prev = node.parent
+        assert isinstance(prev, ChildNode)
+        if prev.move.to_square == square:
+            square = prev.move.from_square
+        if is_trapped(prev.parent.board(), square):
+            return True
+    return False
+
+
+def fork(node: ChildNode) -> bool:
+    """Detect forks."""
+    if moved_piece_type(node) is not KING:
+        board = node.board()
+        nb = 0
+        if is_in_bad_spot(board, node.move.to_square):
+            nb = 0
+        for (piece, square) in attacked_opponent_squares(board, node.move.to_square, not node.turn()):
+            if piece.piece_type == PAWN:
+                continue
+            if (
+                king_values[piece.piece_type] > king_values[moved_piece_type(node)] or (
+                    is_hanging(board, piece, square) and
+                    square not in board.attackers(node.turn(), node.move.to_square)
+                )
+            ):
+                nb += 1
+        if nb > 1:
+            return True
+    return False
+
+
+def skewer(node: ChildNode) -> bool:
+    """Detect skewers."""
+    prev = node.parent
+    assert isinstance(prev, ChildNode)
+    capture = prev.board().piece_at(node.move.to_square)
+    # print(f"captured piece: {capture.symbol()}")
+    if capture and moved_piece_type(node) in ray_piece_types and not node.board().is_checkmate():
+        between = SquareSet.between(node.move.from_square, node.move.to_square)
+        # print(f"between: {between}")
+        op_move = prev.move
+        # print(f"op_move: {op_move}")
+        assert op_move
+        if (op_move.to_square == node.move.to_square or not op_move.from_square in between):
+            # continue
+            # print(f":(")
+            # print(f" condition 1: {op_move.to_square == node.move.to_square}")
+            # print(f"condition 2: "
+             #      f"{not op_move.from_square in between}")
+            return False
+        if (
+            king_values[moved_piece_type(prev)] > king_values[capture.piece_type] and
+            is_in_bad_spot(prev.board(), node.move.to_square)
+        ):
+            # print(":)")
+            return True
+    return False
+
+
+def xray(node: ChildNode) -> bool:
+    """Detect x-rays [unfinished]."""
+    print(f"node: {node.san()}")
+    print(f"is_capture(node): {is_capture(node)}")
+    print("")
+    print(f"prev_op_node: {node.parent}")
+    print("")
+    print(f"node.move.to_square: {chess.square_name(node.move.to_square)}")
+    print(f"prev_op_node.move.to_square: "
+          f"{chess.square_name(node.parent.move.to_square)}")
+    if not is_capture(node):
+        # continue
+        pass
+    prev_op_node = node.parent
+    # assert isinstance(prev_op_node, ChildNode)
+    if prev_op_node.move.to_square != node.move.to_square or moved_piece_type(prev_op_node) == KING:
+        # continue
+        pass
+    prev_pl_node = prev_op_node.parent
+    # assert isinstance(prev_pl_node, ChildNode)
+    if prev_pl_node.move.to_square != prev_op_node.move.to_square:
+        # continue
+        pass
+    if prev_op_node.move.from_square in SquareSet.between(node.move.from_square, node.move.to_square):
+        return True
+    return False
+
+
+def captured_piece_was_abs_pinned(node: ChildNode) -> bool:
+    """Check if a captured piece couldn't escape due to an absolute pin."""
+    prev = node.parent.parent
+    # assert isinstance(prev, ChildNode) or assert isinstance(GameNode)
+    # print(f"Checking if the {'White' if node.turn() else 'Black'} piece on"
+    #       f" {chess.square_name(node.move.to_square)} was pinned in FEN"
+    #       f" {prev.board().fen()}")
+    if prev.board().is_pinned(node.turn(), node.move.to_square):
+        return True
+    return False
+
+
