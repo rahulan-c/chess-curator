@@ -3,5 +3,3 @@ engine/*
 inputs/*
 !inputs/pgn_goes_here.txt
 outputs/*
-tests/*
-!tests/tests.py
