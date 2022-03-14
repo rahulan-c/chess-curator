@@ -8,8 +8,9 @@ from chess.pgn import ChildNode
 from tqdm import tqdm
 
 import choices
+import helpers
 import utils
-from helpers import check_if_move_is_uniquely_nonlosing, \
+from helpers import read_pgn, check_if_move_is_uniquely_nonlosing, \
     check_position_against_masters_db
 
 # Helpers and parameters
@@ -18,16 +19,15 @@ winning_eval_threshold = 300
 gamelink_prefix = "https://lichess.org/"
 
 # Read PGN file
-pgn_path = f"inputs/{choices.filename}.pgn"
-pgn = open(pgn_path)
+pgn = read_pgn(helpers.pgn_path)
 
-# Store all PGN game data for later iteration or sampling
+# For game data
 all_offsets = []
 all_gamelinks = []
 offsets = []
 gamelinks = []
 
-
+# For 'candidate' sac data
 can_ucis = []
 can_svgs = []
 can_links = []
@@ -35,7 +35,7 @@ can_white = []
 can_black = []
 can_movetext = []
 
-# Collect candidates rejected for specific reasons
+# For rejected candidate data
 forks = []
 skewers = []
 abspinned = []
@@ -57,7 +57,7 @@ while True:
 # Pick a specific set of games to check, based on choices.py
 if choices.sample_games:
     ## Sample games from input PGN
-    print(f"Sampling {user_inputs.sample_size} games...")
+    print(f"Sampling {choices.sample_size} games...")
     print("")
     offsets = random.sample(all_offsets, choices.sample_size)
     for i in offsets:
@@ -279,8 +279,7 @@ for offset in tqdm(offsets):
         # NB the fork method needs to be extended to avoid excluding certain
         # kinds of valid sac that can arise after a fork
 
-        # TODO: reject candidate sacs from objectively lost positions (< -300
-        #  from sac side POV)
+        # TODO: only consider candidates from objectively undecided positions
 
         # TODO: skip piece captures resulting from a double attack (and the
         #  captured piece was one of the attacked pieces)
@@ -315,6 +314,9 @@ for offset in tqdm(offsets):
         can_links.append(game.headers['Site'] + '#' + str(precan.ply() + 1))
         can_white.append(game.headers['White'])
         can_black.append(game.headers['Black'])
+
+        # TODO: tag candidates by characteristics (eg by game phase, by sacd'
+        #  piece [tag exchange sacs separately], by quality...)
 
         # Fetch next move
         board.push(n.move)

@@ -36,6 +36,9 @@ import os
 import pandas as pd
 import shutil
 
+import choices
+import utils
+
 # pgn_file = 'games.pgn'
 pgn_file = 'games_team4545_s12.pgn'
 

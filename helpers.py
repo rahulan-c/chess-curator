@@ -5,7 +5,15 @@ import chess.engine
 import requests
 import time
 
+import choices
+
 engine_path = "engine/stockfish_22031308_x64_avx2/stockfish_22031308_x64_avx2.exe"
+pgn_path = f"inputs/{choices.filename}"
+
+def read_pgn(pgn_path):
+    """Read PGN file."""
+    pgn = open(pgn_path)
+    return pgn
 
 def check_if_move_is_uniquely_nonlosing(fen: str,
                                         played: str,

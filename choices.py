@@ -1,8 +1,8 @@
 """User inputs for chess-curator."""
 
-filename = "teamlwseries_with_evals"
+filename = "teamlwseries_with_evals.pgn"
 sample_games = True
-sample_size = 5000
+sample_size = 100
 
 sample_by_ids = False
 sample_ids = ["Hz1RhCkq", "YhEA1DRr", "as8fHyLf", "IXeW8ATa", "JQUIIE3j",
