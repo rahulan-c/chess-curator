@@ -1,0 +1,7 @@
+engine/*
+!engine/engine_goes_here.txt
+inputs/*
+!inputs/pgn_goes_here.txt
+outputs/*
+tests/*
+!tests/tests.py
