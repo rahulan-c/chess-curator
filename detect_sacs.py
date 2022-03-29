@@ -43,6 +43,7 @@ onlynonlosing = []
 trapped = []
 theory = []
 
+
 # Scan PGN headers for faster parsing
 while True:
     offset = pgn.tell()
@@ -52,7 +53,6 @@ while True:
     else:
         all_offsets.append(offset)
         all_gamelinks.append(headers["Site"])
-
 
 # Pick a specific set of games to check, based on choices.py
 if choices.sample_games:
