@@ -15,6 +15,30 @@ def read_pgn(pgn_path):
     pgn = open(pgn_path)
     return pgn
 
+def evaluate_move(fen: str,
+                  played: str,
+                  time_per_move: int = 3,
+                  engine_path: str = engine_path):
+    """ Evaluate a move played in a position with an engine.
+
+    :param fen: FEN of position preceding move
+    :param played: move that was played in UCI format
+    :param time_per_move: number of seconds the engine should spend analysing
+        the position. Default value: 3.
+    :param engine_path: path to engine's .exe file.
+
+    :return: cpl
+    """
+    mate_thresh = 100000
+    engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+    board = chess.Board(fen)
+    info = engine.analyse(board,
+                          multipv=1,
+                          limit=chess.engine.Limit(time=time_per_move))
+    engine.quit()
+    # TODO: finish!
+    return None
+
 def check_if_move_is_uniquely_nonlosing(fen: str,
                                         played: str,
                                         num_engine_moves: int = 5,

@@ -10,6 +10,7 @@ from helpers import check_if_move_is_uniquely_nonlosing, \
 
 
 class SacDetectionTestCase(unittest.TestCase):
+    """Tests for sacrifice detection."""
 
     def test_trapped_piece(self):
 
@@ -107,6 +108,7 @@ class SacDetectionTestCase(unittest.TestCase):
                         self.assertTrue(utils.skewer(node))
                     else:
                         self.assertFalse(utils.skewer(node))
+
 
     def test_check_if_move_is_uniquely_nonlosing(self):
         self.assertTrue(check_if_move_is_uniquely_nonlosing(
