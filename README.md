@@ -1,12 +1,12 @@
 # chess-curator
 
-A collection of scripts under development for identifying interesting things about a set of chess games:
+Assorted scripts that can identify interesting things about chess games, such as:
 
-- (Probable) piece sacrifices
-- Games that ended in a known checkmate pattern
-- Stats about observed 7-piece tablebase positions
-- Stats about endgames
+- Trying to identify piece sacrifices (detect_sacs.py)
+- Identifying games that ended in well-known checkmate patterns (detect_mates.py)
+- Stats about seven-piece tablebase positions that were reached (TBC)
+- Stats about different endgames that were reached (TBC)
 - Stats about tactics
 
-Currently designed to work on Lichess game collection PGNs that include eval data. Anything else won't fly.
+All scripts are designed to only work with PGNs containing games played on Lichess. Some scripts require the input PGN to include eval data; others don't. Using non-Lichess PGNs is sure to raise an error or three early on.
 
